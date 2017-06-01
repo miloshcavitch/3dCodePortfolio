@@ -1,0 +1,2 @@
+use WASD or arrow keys to move, mouse to aim and left mouse button to shoot! scroll mouse wheel to change color of your
+ship/bullet, match it to the enemies and fire!

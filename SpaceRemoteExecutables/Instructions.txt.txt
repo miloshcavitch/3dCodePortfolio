@@ -1,0 +1,3 @@
+WASD or arrow keys to move, mouse to aim and left mouse button to shoot!
+The R key resets the light orbs and the T key toggles a cool bump map bullet decal effect.
+Hope you enjoy!

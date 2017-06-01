@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+  <head>
+    <title>Milo Arnerich-Hatch</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='style.css'>
+  </head>
+  <body>
+    <div id='canvas-wrapper'>
+      <canvas id='game-canvas'></canvas>
+      <div id='mouse-sensitivity-menu'>
+        <p id='exit'>X</p>
+        <br>
+        <br>
+        <p id='scroll-test'>Sensitivity: (scroll mousewheel to test the sensitivity)</p>
+        <input type="range" min="2" max="50" value="50" id="sensitivity">
+      </div>
+    </div>
+    <script type='text/javascript' src='init.js'></script>
+    <script type='text/javascript' src='mousemenus.js'></script>
+    <script type='text/javascript' src='vectorSprites/startbutton.js'></script>
+    <script type='text/javascript' src='vectorSprites/graphicsmenubutton.js'></script>
+    <script type='text/javascript' src='vectorSprites/sensitivityshape.js'></script>
+    <script type='text/javascript' src='vectorSprites/gameover.js'></script>
+    <script type='text/javascript' src='FX/shipExhaust.js'></script>
+    <script type='text/javascript' src='FX/TankBullet.js'></script>
+    <script type='text/javascript' src='FX/PlayerBullet.js'></script>
+    <script type='text/javascript' src='FX/screenBlink.js'></script>
+    <script type='text/javascript' src='FX/explosions.js'></script>
+    <script type='text/javascript' src='vectorSprites/hud.js'></script>
+    <script type='text/javascript' src='vectorSprites/logoHUE.js'></script>
+    <script type='text/javascript' src='vectorSprites/spaceTank.js'></script>
+    <script type='text/javascript' src='vectorSprites/smallestEnemy.js'></script>
+    <script type='text/javascript' src='vectorSprites/oneup.js'></script>
+    <script type='text/javascript' src='vectorSprites/heart.js'></script>
+    <script type='text/javascript' src='items.js'></script>
+    <script type='text/javascript' src='vectorSprites/tempPlayerCharacter.js'></script>
+    <script type='text/javascript' src='vectorRender.js'></script>
+    <script type='text/javascript' src='AI/Aiming.js'></script>
+    <script type='text/javascript' src='AI/movement.js'></script>
+    <script type='text/javascript' src='AI/AIController.js'></script>
+    <script type='text/javascript' src='velocity.js'></script>
+    <script type='text/javascript' src='starsBG.js'></script>
+    <script type='text/javascript' src='engine.js'></script>
+  </body>
+</html>

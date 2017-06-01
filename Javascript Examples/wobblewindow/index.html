@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+  <head>
+    <title>Milo Arnerich-Hatch</title>
+    <link rel='stylesheet' type='text/css' href='style.css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src='matter.min.js'></script>
+    <script type='text/javascript' src='smooth.js'></script>
+  </head>
+  <body>
+    <canvas id='main-canvas'></canvas>
+    <canvas id='composite-canvas'></canvas>
+    <script src='physics.js'></script>
+    <script type='text/javascript'>
+      var mouse = {x: 10, y: 10};
+      var animationString = 'var animationFrame = [';
+      var isRecording = false;
+      $(document).click(function(){//0.000015 plus or minus
+        var r = Math.round(Math.random() * 15);
+        var dX = (renderPoints[r].position.x - mouse.x)/19505000;
+        var dY = (renderPoints[r].position.y - mouse.y)/19505000;
+        console.log(dX);
+        vel.x = dX;
+        vel.y = dY;
+        Body.applyForce(renderPoints[r], vel,vel);
+        //isRecording = !isRecording;
+      })
+      $(document).mousemove(function(event){
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+        Body.setPosition(mousePoint, mouse);
+        var angle =  90;
+        for (var i = 0; i < 15; i++){
+          var point = {x: mouse.x + ( (300) * Math.cos(Math.PI/180 * angle)),
+                      y: mouse.y + ( (300) * Math.sin(Math.PI/180 * angle))};
+          Body.setPosition(staticPoints[i], point);
+          angle -= 360/15;
+
+        }
+      });
+
+
+
+      var mainCanvas = document.getElementById('main-canvas');
+      var ctx = mainCanvas.getContext('2d');
+      var compositeCanvas = document.getElementById('composite-canvas');
+      var gco = compositeCanvas.getContext('2d');
+      mainCanvas.width = window.innerWidth;
+      compositeCanvas.width = window.innerWidth;
+      mainCanvas.height= window.innerHeight;
+      compositeCanvas.height = window.innerHeight;
+      var renderedCircle = new SmoothPath(ctx);
+      renderPoints.forEach(function(r){
+        renderedCircle.positions.push(new SmoothPoint(r.position.x,r.position.y));
+      });
+
+      var rects = [];
+      RECT = function(){
+        this.x = Math.random() * mainCanvas.width;
+        this.y = Math.random() * mainCanvas.height;
+        this.size = Math.random() * 200
+        this.oscillation = Math.random();
+        var color = "hsl(" + Math.floor(Math.random() * 360) + ", 90%, 50%)";
+        this.color = color;
+        this.dx = 1 - Math.random() * 2;
+        this.dy = 1 - Math.random() * 2;
+        this.testBoundaries = function(){
+          if ( (this.x +  this.size + (Math.sin(this.oscillation) * this.size/4) )>= mainCanvas.width || this.x <= 0){
+            this.dx *= -1;
+          }
+          if ( (this.y +  this.size + (Math.sin(this.oscillation) * this.size/4) )>= mainCanvas.height || this.y <= 0){
+            this.dy *= -1;
+          }
+        }
+      }
+      for (var i = 0; i < 175; i++){
+        rects.push(new RECT());
+      }
+
+      var updateWobble = function(){
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.clearRect(0,0,mainCanvas.width,mainCanvas.height);
+        ctx.fillRect(0,0,mainCanvas.width,mainCanvas.height);
+
+        for (var i = 0; i < rects.length; i++){
+          rects[i].x += rects[i].dx;
+          rects[i].y += rects[i].dy;
+          rects[i].testBoundaries();
+          ctx.beginPath();
+          ctx.fillStyle = rects[i].color;
+          //console.log(ctx.fillStyle);
+          var tempSize = rects[i].size + (Math.sin(rects[i].oscillation) * rects[i].size/4)
+          ctx.rect( (rects[i].x - tempSize/2),(rects[i].y - tempSize/2), tempSize,tempSize);
+          ctx.fill();
+          ctx.closePath();
+        }
+
+        ctx.globalCompositeOperation = 'destination-in';
+        for (var i = 0; i < renderedCircle.positions.length; i++){
+          renderedCircle.positions[i].x = renderPoints[i].position.x;
+          renderedCircle.positions[i].y = renderPoints[i].position.y;
+        }
+        renderedCircle.updateHandles();
+        renderedCircle.draw();
+        if ( Math.hypot( (mouseBall.position.x - mousePoint.position.x), (mouseBall.position.y - mousePoint.position.y) ) >= 400 ){
+          console.log('far!');
+        }
+        //renderedCircle.debugDraw();
+
+      }
+
+      setInterval(updateWobble, 1000/60);
+
+
+    </script>
+  </body>
+</html>
