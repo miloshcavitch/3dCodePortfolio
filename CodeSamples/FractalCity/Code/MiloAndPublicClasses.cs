@@ -56,8 +56,8 @@ public class LineSegment
     public int testThisIndex;
     public List<Vector3> fixIntPos = new List<Vector3>();
 
-     public LineSegment(Vector3 start, Vector3 end)
-     {
+    public LineSegment(Vector3 start, Vector3 end)
+    {
         points[0] = start;
         points[1] = end;
         connections.Add(new List<Connection>());
@@ -152,14 +152,14 @@ public class Milo
     {
         float perp = angle + Mathf.PI / 2;
         if (perp > Mathf.PI * 2)
-            perp -= Mathf.PI * 2;
+        perp -= Mathf.PI * 2;
         return perp;
     }
     static public float GetFlip(float angle)
     {
         float flip = angle + Mathf.PI;
         if (flip > Mathf.PI * 2)
-            flip -= Mathf.PI * 2;
+        flip -= Mathf.PI * 2;
         return flip;
     }
     static public LineSegment LineFromCenter(Vector3 origin, float angle, float maxDist)
@@ -277,364 +277,364 @@ public class Milo
             {
                 Debug.Log("test");
 
-            } else
+                } else
+                {
+                    leftoverChoices.Add(currentLine.connections[isEnd][i]);
+                }
+            }
+            Debug.Log("test");
+            return DetermineMostLeft(microGridLines, currentLine, isEnd);
+        }
+        static public Vector3 IntersectingPoint(LineSegment lineOne, LineSegment lineTwo)
+        {//returns 1 if segments paralel, 2 if dont intersect
+            float denominator, a, b, numerator1, numerator2;
+            denominator = ((lineTwo.points[1].z - lineTwo.points[0].z) * (lineOne.points[1].x - lineOne.points[0].x)) - ((lineTwo.points[1].x - lineTwo.points[0].x) * (lineOne.points[1].z - lineOne.points[0].z));
+            if (denominator == 0)
             {
-                leftoverChoices.Add(currentLine.connections[isEnd][i]);
+                return new Vector3(0, 1, 0);//parallel
+            }
+            a = lineOne.points[0].z - lineTwo.points[0].z;
+            b = lineOne.points[0].x - lineTwo.points[0].x;
+            numerator1 = ((lineTwo.points[1].x - lineTwo.points[0].x) * a) - ((lineTwo.points[1].z - lineTwo.points[0].z) * b);
+            numerator2 = ((lineOne.points[1].x - lineOne.points[0].x) * a) - ((lineOne.points[1].z - lineOne.points[0].z) * b);
+            a = numerator1 / denominator;
+            b = numerator2 / denominator;
+
+
+            float x = lineOne.points[0].x + (a * (lineOne.points[1].x - lineOne.points[0].x));
+            float y = lineOne.points[0].z + (a * (lineOne.points[1].z - lineOne.points[0].z));
+
+            if (a >= 0 && a <= 1 && b >= 0 && b <= 1)
+            {
+                return new Vector3(x, 0, y);
+            }
+            else
+            {
+                return new Vector3(0, 2, 0);
             }
         }
-        Debug.Log("test");
-        return DetermineMostLeft(microGridLines, currentLine, isEnd);
-    }
-    static public Vector3 IntersectingPoint(LineSegment lineOne, LineSegment lineTwo)
-    {//returns 1 if segments paralel, 2 if dont intersect
-        float denominator, a, b, numerator1, numerator2;
-        denominator = ((lineTwo.points[1].z - lineTwo.points[0].z) * (lineOne.points[1].x - lineOne.points[0].x)) - ((lineTwo.points[1].x - lineTwo.points[0].x) * (lineOne.points[1].z - lineOne.points[0].z));
-        if (denominator == 0)
+
+        static public void LinePointsToSegments(List<Vector3> points, LineSegment fullLine, ref List<IntersectionIndex> previousIntersections, ref int nextIndex, ref List<LineSegment> listAdd, int xyb)
         {
-            return new Vector3(0, 1, 0);//parallel
-        }
-        a = lineOne.points[0].z - lineTwo.points[0].z;
-        b = lineOne.points[0].x - lineTwo.points[0].x;
-        numerator1 = ((lineTwo.points[1].x - lineTwo.points[0].x) * a) - ((lineTwo.points[1].z - lineTwo.points[0].z) * b);
-        numerator2 = ((lineOne.points[1].x - lineOne.points[0].x) * a) - ((lineOne.points[1].z - lineOne.points[0].z) * b);
-        a = numerator1 / denominator;
-        b = numerator2 / denominator;
-
-
-        float x = lineOne.points[0].x + (a * (lineOne.points[1].x - lineOne.points[0].x));
-        float y = lineOne.points[0].z + (a * (lineOne.points[1].z - lineOne.points[0].z));
-
-        if (a >= 0 && a <= 1 && b >= 0 && b <= 1)
-        {
-            return new Vector3(x, 0, y);
-        }
-        else
-        {
-            return new Vector3(0, 2, 0);
-        }
-    }
-
-    static public void LinePointsToSegments(List<Vector3> points, LineSegment fullLine, ref List<IntersectionIndex> previousIntersections, ref int nextIndex, ref List<LineSegment> listAdd, int xyb)
-    {
-        int lineCount = 0;
-        Color[] colorRay = new Color[5];
-        colorRay[0] = Color.green;
-        colorRay[1] = Color.red;
-        colorRay[2] = Color.black;
-        colorRay[3] = Color.yellow;
-        colorRay[4] = Color.magenta;
-        int colorIndex = 0;
-        points.Add(fullLine.points[0]);
-        points.Add(fullLine.points[1]);
-        points = points.Distinct().ToList();
-        points.Sort((x, y) => -(Hypot(x, fullLine.points[0]).CompareTo(Hypot(y, fullLine.points[0]))));
-        List<LineSegment> segments = new List<LineSegment>();
-        for (int i = 0; i < points.Count - 1; i++)
-        {
-
-            LineSegment newLine = new LineSegment(points[i], points[i + 1], xyb);
-            if (newLine.points[0] != newLine.points[1])
+            int lineCount = 0;
+            Color[] colorRay = new Color[5];
+            colorRay[0] = Color.green;
+            colorRay[1] = Color.red;
+            colorRay[2] = Color.black;
+            colorRay[3] = Color.yellow;
+            colorRay[4] = Color.magenta;
+            int colorIndex = 0;
+            points.Add(fullLine.points[0]);
+            points.Add(fullLine.points[1]);
+            points = points.Distinct().ToList();
+            points.Sort((x, y) => -(Hypot(x, fullLine.points[0]).CompareTo(Hypot(y, fullLine.points[0]))));
+            List<LineSegment> segments = new List<LineSegment>();
+            for (int i = 0; i < points.Count - 1; i++)
             {
 
-                for (int s = 0; s < segments.Count; s++)
+                LineSegment newLine = new LineSegment(points[i], points[i + 1], xyb);
+                if (newLine.points[0] != newLine.points[1])
                 {
-                    if ( (segments[s].points[0] == newLine.points[0] && segments[s].points[1] == newLine.points[1]) || (segments[s].points[0] == newLine.points[1] && segments[s].points[1] == newLine.points[0]))
+
+                    for (int s = 0; s < segments.Count; s++)
                     {
-                        Debug.Log("test");
+                        if ( (segments[s].points[0] == newLine.points[0] && segments[s].points[1] == newLine.points[1]) || (segments[s].points[0] == newLine.points[1] && segments[s].points[1] == newLine.points[0]))
+                        {
+                            Debug.Log("test");
+                        }
+                    }
+
+                    newLine = AddConnections(ref listAdd, newLine, ref previousIntersections, nextIndex);
+                    nextIndex++;
+                    listAdd.Add(newLine);
+                    segments.Add(newLine);
+
+
+                    //add to list
+                    //increase index
+                }
+
+                lineCount++;
+                //Debug.DrawLine(points[i], points[i + 1], colorRay[colorIndex % colorRay.Length], 2000, true);
+                //Debug.DrawLine(newLine.points[0], newLine.points[1], colorRay[colorIndex % colorRay.Length], 20000, true);
+                colorIndex++;
+            }
+            //Debug.Log(lineCount);
+        }
+
+        static public LineSegment AddConnections(ref List<LineSegment> lines, LineSegment thisLine, ref List<IntersectionIndex> intersections, int thisIndex)
+        {
+            int interCount = intersections.Count;
+            intersections.Add(new IntersectionIndex(thisLine.points[0], thisLine.xyb, thisIndex, 0));
+            intersections.Add(new IntersectionIndex(thisLine.points[1], thisLine.xyb, thisIndex, 1));
+            for (int i = 0; i < interCount; i++)
+            {
+                if (thisLine.points[0] == intersections[i].position && thisIndex != intersections[i].index)
+                {
+                    thisLine.connections[0].Add(new Connection(intersections[i].index, intersections[i].xyb, intersections[i].isEnd));
+                    lines[intersections[i].index].connections[intersections[i].isEnd].Add(new Connection(thisIndex, thisLine.xyb, 0));
+                }
+                if (thisLine.points[1] == intersections[i].position && thisIndex != intersections[i].index)
+                {
+                    thisLine.connections[1].Add(new Connection(intersections[i].index, intersections[i].xyb, intersections[i].isEnd));
+                    lines[intersections[i].index].connections[intersections[i].isEnd].Add(new Connection(thisIndex, thisLine.xyb, 1));
+                }
+            }
+            return thisLine;
+        }
+
+        static public void RemoveConnections(ref List<LineSegment> lines, int removeIndex, List<Connection> connections)
+        {
+            for (int i = 0; i < connections.Count; i++)
+            {
+                Debug.Log("test");
+                lines[connections[i].index].connections[connections[i].isEnd] = lines[connections[i].index].connections[connections[i].isEnd].Where(x => x.index != removeIndex).ToList();
+                Debug.Log("test");
+            }
+        }
+        static public LineSegment ExtendLine(LineSegment line, float dist)
+        {
+
+            LineSegment newLine = line;
+
+            LineSegment bugLine = newLine;
+
+            // Debug.DrawLine(bugLine.points[0] - Vector3.up, bugLine.points[1] - Vector3.up, Color.green, 20000, true);
+
+            Vector3 bb = bugLine.points[0] - bugLine.points[1];
+            bb = bb.normalized;
+            float mag = bugLine.points[0].magnitude - bugLine.points[1].magnitude;
+            Vector3 first, second;
+            first = bugLine.points[0] + (bb * 0.1f);
+            second = bugLine.points[1] - ( bb * 0.1f);
+            //Debug.DrawLine(first - Vector3.up, second - Vector3.up, Color.green, 20000, true);
+            //bugLine.points[0] = first;
+            //bugLine.points[1] = second;
+            return newLine;
+        }
+
+        static public List<LineSegment> GenerateExBounds(List<LineSegment> bounds)//MUST FIX THIS FUNCTION!!
+        {
+            List<LineSegment> exBounds = new List<LineSegment>();
+            float leftMost, rightMost, topMost, bottomMost;
+            leftMost = rightMost = bounds[0].points[0].x;
+            topMost = bottomMost = bounds[0].points[0].z;
+            for (int i = 0; i < bounds.Count; i++)
+            {
+                if (bounds[i].points[0].x < leftMost)
+                leftMost = bounds[i].points[0].x;
+                if (bounds[i].points[1].x < leftMost)
+                leftMost = bounds[i].points[0].x;
+
+                if (bounds[i].points[0].x > rightMost)
+                leftMost = bounds[i].points[0].x;
+                if (bounds[i].points[1].x > rightMost)
+                leftMost = bounds[i].points[0].x;
+
+                if (bounds[i].points[0].z < bottomMost)
+                leftMost = bounds[i].points[0].z;
+                if (bounds[i].points[1].z < bottomMost)
+                leftMost = bounds[i].points[0].z;
+
+                if (bounds[i].points[0].z > topMost)
+                leftMost = bounds[i].points[0].z;
+                if (bounds[i].points[1].z > topMost)
+                leftMost = bounds[i].points[0].z;
+            }
+
+            exBounds.Add(new LineSegment(new Vector3(leftMost, 0, bottomMost), new Vector3(leftMost, 0, topMost)));
+            exBounds.Add(new LineSegment(new Vector3(rightMost, 0, bottomMost), new Vector3(rightMost, 0, topMost)));
+            exBounds.Add(new LineSegment(new Vector3(leftMost, 0, topMost), new Vector3(rightMost, 0, topMost)));
+            exBounds.Add(new LineSegment(new Vector3(leftMost, 0, bottomMost), new Vector3(rightMost, 0, topMost)));
+            //test
+            for (int i = 0; i < exBounds.Count; i++)
+            {
+                Debug.DrawLine(exBounds[i].points[0], exBounds[i].points[1], Color.green, 20000, true);
+            }
+            return exBounds;
+        }
+
+        static public void VisualizeBounds(List<LineSegment> bounds, Color thisColor, Vector3 vOffset)
+        {
+
+            for (int i = 0; i < bounds.Count; i++)
+            {
+                Debug.DrawLine(bounds[i].points[0] + vOffset, bounds[i].points[1] + vOffset, thisColor, 20000, true);
+            }
+        }
+
+        static public void VisualizeBounds(List<LineSegment> bounds, Color thisColor, Vector3 vOffset, int secs)
+        {
+
+            for (int i = 0; i < bounds.Count; i++)
+            {
+                Debug.DrawLine(bounds[i].points[0] + vOffset, bounds[i].points[1] + vOffset, thisColor, secs, true);
+            }
+        }
+
+        static public List<List<LineSegment>> RefreshedBounds(List<List<LineSegment>> roughBounds)
+        {
+            /*
+            * how fresh do i need this to be? will xyb == 2 and the point info be enough?
+            * should i create a continuous line? maybe later
+            * for the sake of speed i could consilidate lines
+            */
+            List<List<LineSegment>> freshBounds = new List<List<LineSegment>>();
+
+            for (int i = 0; i < roughBounds.Count; i++)
+            {
+                List<LineSegment> fBound = new List<LineSegment>();
+                for (int j = 0; j < roughBounds[i].Count; j++)
+                {
+                    if (roughBounds[i][j].points[0] != roughBounds[i][j].points[1])
+                    {
+                        fBound.Add(new LineSegment(roughBounds[i][j].points[0], roughBounds[i][j].points[1], 2));
+                    }
+
+                }
+                freshBounds.Add(fBound);
+            }
+            return freshBounds;
+        }
+
+        static public List<LineSegment> ReOrderLineList(List<LineSegment> unList, float maxDist)
+        {
+            //first reorder the list
+            LineSegment startLine = unList[0];
+            LineSegment finishLine = unList[unList.Count - 1];
+            bool mustFlipStart = false;
+            if (startLine.points[1] == finishLine.points[0] || startLine.points[1] == finishLine.points[1])
+            {
+                mustFlipStart = true;
+            }
+            if (mustFlipStart)
+            {
+                Vector3 newEnd = unList[0].points[0];
+                unList[0].points[0] = unList[0].points[1];
+                unList[0].points[1] = newEnd;
+            }
+            for (int i = 0; i < unList.Count - 1; i++)
+            {
+                if (unList[i].points[1] != unList[i + 1].points[0])
+                {
+                    Vector3 newEnd = unList[i + 1].points[0];
+                    unList[i + 1].points[0] = unList[i + 1].points[1];
+                    unList[i + 1].points[1] = newEnd;
+                }
+            }
+
+            Debug.Log("test");
+
+            //now determine bottom right most point
+            IntFloat smallestMag = new IntFloat(0, 0f, 0);
+            for (int i = 0; i < unList.Count; i++)
+            {
+                if (unList[i].points[0].magnitude < unList[smallestMag.integer].points[smallestMag.isEnd].magnitude)
+                {
+                    smallestMag = new IntFloat(i, 0f, 0);
+                }
+
+                if (unList[i].points[1].magnitude < unList[smallestMag.integer].points[smallestMag.isEnd].magnitude)
+                {
+                    smallestMag = new IntFloat(i, 0f, 1);
+                }
+            }
+
+            //and find the line that shares that point too
+            IntFloat sharedMag;
+            for ( int i = 0; i < unList.Count; i++)
+            {
+                if (i != smallestMag.integer)
+                {
+                    if (unList[smallestMag.integer].points[smallestMag.isEnd] == unList[i].points[0])
+                    {
+                        sharedMag = new IntFloat(i, 0f, 0);
+                    }
+                    if (unList[smallestMag.integer].points[smallestMag.isEnd] == unList[i].points[1])
+                    {
+                        sharedMag = new IntFloat(i, 0f, 1);
                     }
                 }
-
-                newLine = AddConnections(ref listAdd, newLine, ref previousIntersections, nextIndex);
-                nextIndex++;
-                listAdd.Add(newLine);
-                segments.Add(newLine);
-
-
-                //add to list
-                //increase index
             }
-
-            lineCount++;
-            //Debug.DrawLine(points[i], points[i + 1], colorRay[colorIndex % colorRay.Length], 2000, true);
-            //Debug.DrawLine(newLine.points[0], newLine.points[1], colorRay[colorIndex % colorRay.Length], 20000, true);
-            colorIndex++;
-        }
-        //Debug.Log(lineCount);
-    }
-
-    static public LineSegment AddConnections(ref List<LineSegment> lines, LineSegment thisLine, ref List<IntersectionIndex> intersections, int thisIndex)
-    {
-        int interCount = intersections.Count;
-        intersections.Add(new IntersectionIndex(thisLine.points[0], thisLine.xyb, thisIndex, 0));
-        intersections.Add(new IntersectionIndex(thisLine.points[1], thisLine.xyb, thisIndex, 1));
-        for (int i = 0; i < interCount; i++)
-        {
-            if (thisLine.points[0] == intersections[i].position && thisIndex != intersections[i].index)
-            {
-                thisLine.connections[0].Add(new Connection(intersections[i].index, intersections[i].xyb, intersections[i].isEnd));
-                lines[intersections[i].index].connections[intersections[i].isEnd].Add(new Connection(thisIndex, thisLine.xyb, 0));
-            }
-            if (thisLine.points[1] == intersections[i].position && thisIndex != intersections[i].index)
-            {
-                thisLine.connections[1].Add(new Connection(intersections[i].index, intersections[i].xyb, intersections[i].isEnd));
-                lines[intersections[i].index].connections[intersections[i].isEnd].Add(new Connection(thisIndex, thisLine.xyb, 1));
-            }
-        }
-        return thisLine;
-    }
-
-    static public void RemoveConnections(ref List<LineSegment> lines, int removeIndex, List<Connection> connections)
-    {
-        for (int i = 0; i < connections.Count; i++)
-        {
             Debug.Log("test");
-            lines[connections[i].index].connections[connections[i].isEnd] = lines[connections[i].index].connections[connections[i].isEnd].Where(x => x.index != removeIndex).ToList();
-            Debug.Log("test");
+            //now determine which way is "out"
+
+
+            return unList;
         }
-    }
-    static public LineSegment ExtendLine(LineSegment line, float dist)
-    {
-
-        LineSegment newLine = line;
-
-        LineSegment bugLine = newLine;
-
-        // Debug.DrawLine(bugLine.points[0] - Vector3.up, bugLine.points[1] - Vector3.up, Color.green, 20000, true);
-
-        Vector3 bb = bugLine.points[0] - bugLine.points[1];
-        bb = bb.normalized;
-        float mag = bugLine.points[0].magnitude - bugLine.points[1].magnitude;
-        Vector3 first, second;
-        first = bugLine.points[0] + (bb * 0.1f);
-        second = bugLine.points[1] - ( bb * 0.1f);
-        //Debug.DrawLine(first - Vector3.up, second - Vector3.up, Color.green, 20000, true);
-        //bugLine.points[0] = first;
-        //bugLine.points[1] = second;
-        return newLine;
-    }
-
-    static public List<LineSegment> GenerateExBounds(List<LineSegment> bounds)//MUST FIX THIS FUNCTION!!
-    {
-        List<LineSegment> exBounds = new List<LineSegment>();
-        float leftMost, rightMost, topMost, bottomMost;
-        leftMost = rightMost = bounds[0].points[0].x;
-        topMost = bottomMost = bounds[0].points[0].z;
-        for (int i = 0; i < bounds.Count; i++)
+        static public List<LineSegment> FlipLineList(List<LineSegment> bounds)
         {
-            if (bounds[i].points[0].x < leftMost)
-                leftMost = bounds[i].points[0].x;
-            if (bounds[i].points[1].x < leftMost)
-                leftMost = bounds[i].points[0].x;
-
-            if (bounds[i].points[0].x > rightMost)
-                leftMost = bounds[i].points[0].x;
-            if (bounds[i].points[1].x > rightMost)
-                leftMost = bounds[i].points[0].x;
-
-            if (bounds[i].points[0].z < bottomMost)
-                leftMost = bounds[i].points[0].z;
-            if (bounds[i].points[1].z < bottomMost)
-                leftMost = bounds[i].points[0].z;
-
-            if (bounds[i].points[0].z > topMost)
-                leftMost = bounds[i].points[0].z;
-            if (bounds[i].points[1].z > topMost)
-                leftMost = bounds[i].points[0].z;
-        }
-
-        exBounds.Add(new LineSegment(new Vector3(leftMost, 0, bottomMost), new Vector3(leftMost, 0, topMost)));
-        exBounds.Add(new LineSegment(new Vector3(rightMost, 0, bottomMost), new Vector3(rightMost, 0, topMost)));
-        exBounds.Add(new LineSegment(new Vector3(leftMost, 0, topMost), new Vector3(rightMost, 0, topMost)));
-        exBounds.Add(new LineSegment(new Vector3(leftMost, 0, bottomMost), new Vector3(rightMost, 0, topMost)));
-        //test
-        for (int i = 0; i < exBounds.Count; i++)
-        {
-            Debug.DrawLine(exBounds[i].points[0], exBounds[i].points[1], Color.green, 20000, true);
-        }
-        return exBounds;
-    }
-
-    static public void VisualizeBounds(List<LineSegment> bounds, Color thisColor, Vector3 vOffset)
-    {
-
-        for (int i = 0; i < bounds.Count; i++)
-        {
-            Debug.DrawLine(bounds[i].points[0] + vOffset, bounds[i].points[1] + vOffset, thisColor, 20000, true);
-        }
-    }
-
-    static public void VisualizeBounds(List<LineSegment> bounds, Color thisColor, Vector3 vOffset, int secs)
-    {
-
-        for (int i = 0; i < bounds.Count; i++)
-        {
-            Debug.DrawLine(bounds[i].points[0] + vOffset, bounds[i].points[1] + vOffset, thisColor, secs, true);
-        }
-    }
-
-    static public List<List<LineSegment>> RefreshedBounds(List<List<LineSegment>> roughBounds)
-    {
-        /*
-         * how fresh do i need this to be? will xyb == 2 and the point info be enough?
-         * should i create a continuous line? maybe later
-         * for the sake of speed i could consilidate lines
-         */
-        List<List<LineSegment>> freshBounds = new List<List<LineSegment>>();
-
-        for (int i = 0; i < roughBounds.Count; i++)
-        {
-            List<LineSegment> fBound = new List<LineSegment>();
-            for (int j = 0; j < roughBounds[i].Count; j++)
+            for ( int i = 0; i < bounds.Count; i++)
             {
-                if (roughBounds[i][j].points[0] != roughBounds[i][j].points[1])
-                {
-                    fBound.Add(new LineSegment(roughBounds[i][j].points[0], roughBounds[i][j].points[1], 2));
-                }
-
-            }
-            freshBounds.Add(fBound);
-        }
-        return freshBounds;
-    }
-
-    static public List<LineSegment> ReOrderLineList(List<LineSegment> unList, float maxDist)
-    {
-        //first reorder the list
-        LineSegment startLine = unList[0];
-        LineSegment finishLine = unList[unList.Count - 1];
-        bool mustFlipStart = false;
-        if (startLine.points[1] == finishLine.points[0] || startLine.points[1] == finishLine.points[1])
-        {
-            mustFlipStart = true;
-        }
-        if (mustFlipStart)
-        {
-            Vector3 newEnd = unList[0].points[0];
-            unList[0].points[0] = unList[0].points[1];
-            unList[0].points[1] = newEnd;
-        }
-        for (int i = 0; i < unList.Count - 1; i++)
-        {
-            if (unList[i].points[1] != unList[i + 1].points[0])
-            {
-                Vector3 newEnd = unList[i + 1].points[0];
-                unList[i + 1].points[0] = unList[i + 1].points[1];
-                unList[i + 1].points[1] = newEnd;
-            }
-        }
-
-        Debug.Log("test");
-
-        //now determine bottom right most point
-        IntFloat smallestMag = new IntFloat(0, 0f, 0);
-        for (int i = 0; i < unList.Count; i++)
-        {
-            if (unList[i].points[0].magnitude < unList[smallestMag.integer].points[smallestMag.isEnd].magnitude)
-            {
-                smallestMag = new IntFloat(i, 0f, 0);
+                Vector3 newEnd = bounds[i].points[0];
+                bounds[i].points[0] = bounds[i].points[1];
+                bounds[i].points[1] = newEnd;
             }
 
-            if (unList[i].points[1].magnitude < unList[smallestMag.integer].points[smallestMag.isEnd].magnitude)
+            return bounds;
+        }
+        static public void DrawNormalDirection(List<LineSegment> bounds, int sex)
+        {
+            for (int i = 0; i < bounds.Count; i++)
             {
-                smallestMag = new IntFloat(i, 0f, 1);
-            }
-        }
-
-        //and find the line that shares that point too
-        IntFloat sharedMag;
-        for ( int i = 0; i < unList.Count; i++)
-        {
-            if (i != smallestMag.integer)
-            {
-                if (unList[smallestMag.integer].points[smallestMag.isEnd] == unList[i].points[0])
-                {
-                    sharedMag = new IntFloat(i, 0f, 0);
-                }
-                if (unList[smallestMag.integer].points[smallestMag.isEnd] == unList[i].points[1])
-                {
-                    sharedMag = new IntFloat(i, 0f, 1);
-                }
-            }
-        }
-        Debug.Log("test");
-        //now determine which way is "out"
-
-
-        return unList;
-    }
-    static public List<LineSegment> FlipLineList(List<LineSegment> bounds)
-    {
-        for ( int i = 0; i < bounds.Count; i++)
-        {
-            Vector3 newEnd = bounds[i].points[0];
-            bounds[i].points[0] = bounds[i].points[1];
-            bounds[i].points[1] = newEnd;
-        }
-
-        return bounds;
-    }
-    static public void DrawNormalDirection(List<LineSegment> bounds, int sex)
-    {
-        for (int i = 0; i < bounds.Count; i++)
-        {
-            Vector3 lineMedian = Milo.MedianPoint(bounds[i]);
-            Vector3 one, two;
-            one = bounds[i].points[0] - lineMedian;
-            two = bounds[i].points[1] - lineMedian;
-            Vector3 three = two;
-            three.x = two.z * -1;
-            three.z = two.x;
-            three.Normalize();
-            Debug.DrawLine(lineMedian + Vector3.up, lineMedian + three + Vector3.up, Color.white, sex, true);
-        }
-    }
-    static public void VisualizeBlocks(List<List<LineSegment>> blocks)
-    {
-        for (int i = 0; i < blocks.Count; i++)
-        {
-            Vector3 median = MedianPoint(blocks[i]);
-            Color thisColor = Color.HSVToRGB(Random.Range(0f, 1f), 1f, 1f);
-            for (int j = 0; j < blocks[i].Count; j++)
-            {
+                Vector3 lineMedian = Milo.MedianPoint(bounds[i]);
                 Vector3 one, two;
-                one = Milo.AngleProjectionFromPoint(blocks[i][j].points[0], Milo.GetAngle(blocks[i][j].points[0], median), 0.2f);
-                two = Milo.AngleProjectionFromPoint(blocks[i][j].points[1], Milo.GetAngle(blocks[i][j].points[1], median), 0.2f);
-                Debug.DrawLine(one, two, thisColor, 20000, true);
+                one = bounds[i].points[0] - lineMedian;
+                two = bounds[i].points[1] - lineMedian;
+                Vector3 three = two;
+                three.x = two.z * -1;
+                three.z = two.x;
+                three.Normalize();
+                Debug.DrawLine(lineMedian + Vector3.up, lineMedian + three + Vector3.up, Color.white, sex, true);
             }
         }
-    }
-    static public List<List<LineSegment>> ConcatenateBlocks(List<List<List<LineSegment>>> blocks)
-    {
-        List<List<LineSegment>> newList = new List<List<LineSegment>>();
-        for (int i = 0; i < blocks.Count; i++)
+        static public void VisualizeBlocks(List<List<LineSegment>> blocks)
         {
-            for (int j = 0; j < blocks[i].Count; j++)
+            for (int i = 0; i < blocks.Count; i++)
             {
-                newList.Add(blocks[i][j]);
+                Vector3 median = MedianPoint(blocks[i]);
+                Color thisColor = Color.HSVToRGB(Random.Range(0f, 1f), 1f, 1f);
+                for (int j = 0; j < blocks[i].Count; j++)
+                {
+                    Vector3 one, two;
+                    one = Milo.AngleProjectionFromPoint(blocks[i][j].points[0], Milo.GetAngle(blocks[i][j].points[0], median), 0.2f);
+                    two = Milo.AngleProjectionFromPoint(blocks[i][j].points[1], Milo.GetAngle(blocks[i][j].points[1], median), 0.2f);
+                    Debug.DrawLine(one, two, thisColor, 20000, true);
+                }
             }
         }
-        return newList;
-    }
-    static public void ShowSmallestMagnitude(List<LineSegment> bounds, int sex)
-    {
-        Vector3 smallest = bounds[0].points[0];
-        for (int i = 0; i < bounds.Count; i++)
+        static public List<List<LineSegment>> ConcatenateBlocks(List<List<List<LineSegment>>> blocks)
         {
-            if (bounds[i].points[0].magnitude < smallest.magnitude)
+            List<List<LineSegment>> newList = new List<List<LineSegment>>();
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                for (int j = 0; j < blocks[i].Count; j++)
+                {
+                    newList.Add(blocks[i][j]);
+                }
+            }
+            return newList;
+        }
+        static public void ShowSmallestMagnitude(List<LineSegment> bounds, int sex)
+        {
+            Vector3 smallest = bounds[0].points[0];
+            for (int i = 0; i < bounds.Count; i++)
+            {
+                if (bounds[i].points[0].magnitude < smallest.magnitude)
                 smallest = bounds[i].points[0];
-            if (bounds[i].points[1].magnitude < smallest.magnitude)
+                if (bounds[i].points[1].magnitude < smallest.magnitude)
                 smallest = bounds[i].points[1];
 
+            }
+            Debug.DrawLine(smallest, smallest + (Vector3.up * 5), Color.magenta, sex, true);
         }
-        Debug.DrawLine(smallest, smallest + (Vector3.up * 5), Color.magenta, sex, true);
-    }
-    static public float GetPerimeter(List<LineSegment> bounds)
-    {
-        float count = 0f;
-        for (int i = 0; i < bounds.Count; i++)
+        static public float GetPerimeter(List<LineSegment> bounds)
         {
-            count += (bounds[i].points[0] - bounds[i].points[1]).magnitude;
+            float count = 0f;
+            for (int i = 0; i < bounds.Count; i++)
+            {
+                count += (bounds[i].points[0] - bounds[i].points[1]).magnitude;
+            }
+            return count;
         }
-        return count;
     }
-}

@@ -19,7 +19,7 @@ public class Shooting : MonoBehaviour {
 
     public GameObject remote;
     private RemoteAnimator remoteAnim;
-	void Start () {
+    void Start () {
         remoteAnim = remote.GetComponent<RemoteAnimator>();
         m_AudioSource = AudioObject.GetComponent<AudioSource>();
 
@@ -29,7 +29,7 @@ public class Shooting : MonoBehaviour {
         lineRender.endWidth = 0.05f;
         lineRender.enabled = false;
         lastShotTime = -10f;
-	}
+    }
     private void PlayShootingSound()
     {
 
@@ -49,7 +49,7 @@ public class Shooting : MonoBehaviour {
         {
             isDecal = !isDecal;
         }
-		if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             remoteAnim.isShot = true;
             remoteAnim.wasShot = false;
@@ -106,13 +106,13 @@ public class Shooting : MonoBehaviour {
         {
             lineRender.enabled = false;
             GunLight.enabled = false;
-        } else if (lineRender.enabled)
-        {
-            lineRender.SetPosition(1, TrueTip.transform.position);
+            } else if (lineRender.enabled)
+            {
+                lineRender.SetPosition(1, TrueTip.transform.position);
+            }
         }
-	}
 
-    void ChangeLanternColor(GameObject lantern) {
-        lantern.GetComponent<LanternAnimator>().SetLanternColors();
+        void ChangeLanternColor(GameObject lantern) {
+            lantern.GetComponent<LanternAnimator>().SetLanternColors();
+        }
     }
-}

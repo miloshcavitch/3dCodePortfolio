@@ -60,7 +60,7 @@ public class LanternAnimator : MonoBehaviour {
             m_AudioSource.volume = Mathf.Lerp(0f, 1f, Time.time - CutAudioScript.timeStamp);
         }
     }
-	public void SetLanternColors()
+	  public void SetLanternColors()
     {
         lastColorSwitchTime = Time.time;
         currentColorVal += Random.Range(0.33f, 0.66f);

@@ -28,8 +28,8 @@ public class FractBlockGen : MonoBehaviour {
     private List<float> testAngleList = new List<float>();
     public List<List<LineSegment>> GenerateFractalBlocks(List<LineSegment> bounds, List<LineSegment> exBounds, int gSize, ref List<LineSegment> testLineBounds)
     {
-      //function that does majority of work. takes the island bounds, draws lines over them then chops all lines up.
-      //Then creates references for everyline, so every end of a line has a reference to all connected lines
+        //function that does majority of work. takes the island bounds, draws lines over them then chops all lines up.
+        //Then creates references for everyline, so every end of a line has a reference to all connected lines
         List<IntersectionIndex> FixRefList = new List<IntersectionIndex>();
         //turn bounds into continuous loop/polyline w/ func
 
@@ -76,14 +76,14 @@ public class FractBlockGen : MonoBehaviour {
         {
             microGridLines[i].testThisIndex = i;//test
             if (microGridLines[i].points[0] == microGridLines[i].points[1])
-                Debug.Log("test");
+            Debug.Log("test");
 
             for (int j = 0; j < microGridLines.Count; j++)
             {
                 if (i != j)
                 {
                     if (microGridLines[j].points[0] == microGridLines[i].points[0] && microGridLines[j].points[1] == microGridLines[i].points[1])
-                        Debug.Log("test");
+                    Debug.Log("test");
                 }
 
             }
@@ -113,136 +113,136 @@ public class FractBlockGen : MonoBehaviour {
             if (tooChop[i].xyb != 2)
             {
                 //thisChop = Milo.ExtendLine(tooChop[i], 0.01f);
-            } else
-            {
-                Debug.Log("test");
-            }
-            List<Vector3> intersectingPoints = new List<Vector3>();
-            if (tooChop[i].fixIntPos.Count != 0)
-            {
-                for (int j = 0; j < tooChop[i].fixIntPos.Count; j++)
+                } else
                 {
-                    intersectingPoints.Add(tooChop[i].fixIntPos[j]);
+                    Debug.Log("test");
+                }
+                List<Vector3> intersectingPoints = new List<Vector3>();
+                if (tooChop[i].fixIntPos.Count != 0)
+                {
+                    for (int j = 0; j < tooChop[i].fixIntPos.Count; j++)
+                    {
+                        intersectingPoints.Add(tooChop[i].fixIntPos[j]);
+                    }
+
+                }
+                for (int j = 0; j < chopOne.Count; j++)
+                {
+                    LineSegment oneChop = chopOne[j];
+                    if (chopOne[j].xyb != 2)
+                    {
+                        oneChop = Milo.ExtendLine(chopOne[j], 0.01f);
+                    }
+                    Vector3 intersect = Milo.IntersectingPoint(thisChop, oneChop);
+                    if (intersect.y == 0)
+                    {
+                        intersectingPoints.Add(intersect);
+                    }
+                }
+                for (int j = 0; j < chopTwo.Count; j++)
+                {
+                    LineSegment twoChop = chopTwo[j];
+                    if (chopTwo[j].xyb != 2)
+                    {
+                        twoChop = Milo.ExtendLine(chopTwo[j], 0.01f);
+                    }
+                    Vector3 intersect = Milo.IntersectingPoint(thisChop, twoChop);
+                    if (intersect.y == 0)
+                    {
+                        intersectingPoints.Add(intersect);
+                    }
                 }
 
+                Milo.LinePointsToSegments(intersectingPoints, tooChop[i], ref previousIntersections, ref nextIndex, ref microGridLines, xybee);
+
             }
-            for (int j = 0; j < chopOne.Count; j++)
+        }
+
+        static List<Vector3> LineExtensionIntersections(LineSegment tooChop, List<LineSegment> chopOne, List<LineSegment> chopTwo)
+        {
+            List<Vector3> intersectionReturn = new List<Vector3>();
+            for (int i = 0; i < chopOne.Count; i++)
             {
-                LineSegment oneChop = chopOne[j];
-                if (chopOne[j].xyb != 2)
-                {
-                   oneChop = Milo.ExtendLine(chopOne[j], 0.01f);
-                }
-                Vector3 intersect = Milo.IntersectingPoint(thisChop, oneChop);
+                LineSegment elChop = Milo.ExtendLine(chopOne[i], 0.01f);
+                Vector3 intersect = Milo.IntersectingPoint(tooChop, elChop);
                 if (intersect.y == 0)
                 {
-                    intersectingPoints.Add(intersect);
+                    intersectionReturn.Add(intersect);
                 }
             }
-            for (int j = 0; j < chopTwo.Count; j++)
+            for (int i = 0; i < chopTwo.Count; i++)
             {
-                LineSegment twoChop = chopTwo[j];
-                if (chopTwo[j].xyb != 2)
-                {
-                    twoChop = Milo.ExtendLine(chopTwo[j], 0.01f);
-                }
-                Vector3 intersect = Milo.IntersectingPoint(thisChop, twoChop);
+                LineSegment elChop = Milo.ExtendLine(chopTwo[i], 0.01f);
+                Vector3 intersect = Milo.IntersectingPoint(tooChop, elChop);
                 if (intersect.y == 0)
                 {
-                    intersectingPoints.Add(intersect);
+                    intersectionReturn.Add(intersect);
                 }
             }
 
-            Milo.LinePointsToSegments(intersectingPoints, tooChop[i], ref previousIntersections, ref nextIndex, ref microGridLines, xybee);
-
+            return intersectionReturn;
         }
-    }
-
-    static List<Vector3> LineExtensionIntersections(LineSegment tooChop, List<LineSegment> chopOne, List<LineSegment> chopTwo)
-    {
-        List<Vector3> intersectionReturn = new List<Vector3>();
-        for (int i = 0; i < chopOne.Count; i++)
-        {
-            LineSegment elChop = Milo.ExtendLine(chopOne[i], 0.01f);
-            Vector3 intersect = Milo.IntersectingPoint(tooChop, elChop);
-            if (intersect.y == 0)
+        static List<LineSegment> LinesOverLand(LineSegment tooChop, ref List<LineSegment> bounds, ref List<List<LineSegment>> macroList, int xy, ref List<IntersectionIndex> FixRefList)
+        {//chops lines by checking all points of intersection, orders them from distance of line origin and then determines which segments would be over land by only starting lines
+            //at an odd index and ending them at the next even index (works if index 0 is not inside an island)
+            List<Vector3> intersectionPositions = new List<Vector3>();
+            for (int i = 0; i < bounds.Count; i++)
             {
-                intersectionReturn.Add(intersect);
+                Vector3 intersect = Milo.IntersectingPoint(tooChop, bounds[i]);
+                if (intersect.y == 0)
+                {
+                    intersectionPositions.Add(intersect);
+
+                    FixRefList.Add(new IntersectionIndex(intersect, 2, i, 0));
+                    bounds[i].fixIntPos.Add(intersect);
+                    Debug.Log("test");
+                }
             }
-        }
-        for (int i = 0; i < chopTwo.Count; i++)
-        {
-            LineSegment elChop = Milo.ExtendLine(chopTwo[i], 0.01f);
-            Vector3 intersect = Milo.IntersectingPoint(tooChop, elChop);
-            if (intersect.y == 0)
+
+            intersectionPositions = intersectionPositions.Distinct().ToList();
+            intersectionPositions.Sort((x, y) => -(Milo.Hypot(x, tooChop.points[0]).CompareTo(Milo.Hypot(y, tooChop.points[0]))));
+
+            List<LineSegment> overLand = new List<LineSegment>();
+            for (int i = 0; i < intersectionPositions.Count - 1; i += 2)
             {
-                intersectionReturn.Add(intersect);
+                macroList[xy].Add(new LineSegment(intersectionPositions[i], intersectionPositions[i + 1]));
             }
+
+            return overLand;
         }
 
-        return intersectionReturn;
-    }
-    static List<LineSegment> LinesOverLand(LineSegment tooChop, ref List<LineSegment> bounds, ref List<List<LineSegment>> macroList, int xy, ref List<IntersectionIndex> FixRefList)
-    {//chops lines by checking all points of intersection, orders them from distance of line origin and then determines which segments would be over land by only starting lines
-      //at an odd index and ending them at the next even index (works if index 0 is not inside an island)
-        List<Vector3> intersectionPositions = new List<Vector3>();
-        for (int i = 0; i < bounds.Count; i++)
+        static LineSegment SplitLineSegment(ref LineSegment tooSplit, Vector3 intersection)
         {
-            Vector3 intersect = Milo.IntersectingPoint(tooChop, bounds[i]);
-            if (intersect.y == 0)
+            LineSegment newLine = new LineSegment(intersection, tooSplit.points[1]);
+            tooSplit.points[1] = intersection;
+            return newLine;
+        }
+        List<LineSegment> createInitBounds()
+        {
+            float width = GetComponent<HexGen>().width;
+            float height = GetComponent<HexGen>().height;
+            LineSegment left, right, top, bottom;
+            List<LineSegment> iBounds = new List<LineSegment>();
+            left = new LineSegment(new Vector3(0, 0, 0), new Vector3(0, 0, height));
+            right = new LineSegment(new Vector3(width, 0, 0), new Vector3(width, 0, height));
+            top = new LineSegment(new Vector3(0, 0, height), new Vector3(width, 0, height));
+            bottom = new LineSegment(new Vector3(0, 0, 0), new Vector3(width, 0, 0));
+            iBounds.Add(left);
+            iBounds.Add(top);
+            iBounds.Add(right);
+            iBounds.Add(bottom);
+
+            for (int i = 0; i < iBounds.Count; i++)
             {
-                intersectionPositions.Add(intersect);
-
-                FixRefList.Add(new IntersectionIndex(intersect, 2, i, 0));
-                bounds[i].fixIntPos.Add(intersect);
-                Debug.Log("test");
+                // Debug.DrawLine(iBounds[i].points[0], iBounds[i].points[1], Color.white, 20000, true);
             }
+
+            return iBounds;
         }
 
-        intersectionPositions = intersectionPositions.Distinct().ToList();
-        intersectionPositions.Sort((x, y) => -(Milo.Hypot(x, tooChop.points[0]).CompareTo(Milo.Hypot(y, tooChop.points[0]))));
 
-        List<LineSegment> overLand = new List<LineSegment>();
-        for (int i = 0; i < intersectionPositions.Count - 1; i += 2)
-        {
-            macroList[xy].Add(new LineSegment(intersectionPositions[i], intersectionPositions[i + 1]));
-        }
-
-        return overLand;
-    }
-
-    static LineSegment SplitLineSegment(ref LineSegment tooSplit, Vector3 intersection)
-    {
-        LineSegment newLine = new LineSegment(intersection, tooSplit.points[1]);
-        tooSplit.points[1] = intersection;
-        return newLine;
-    }
-    List<LineSegment> createInitBounds()
-    {
-        float width = GetComponent<HexGen>().width;
-        float height = GetComponent<HexGen>().height;
-        LineSegment left, right, top, bottom;
-        List<LineSegment> iBounds = new List<LineSegment>();
-        left = new LineSegment(new Vector3(0, 0, 0), new Vector3(0, 0, height));
-        right = new LineSegment(new Vector3(width, 0, 0), new Vector3(width, 0, height));
-        top = new LineSegment(new Vector3(0, 0, height), new Vector3(width, 0, height));
-        bottom = new LineSegment(new Vector3(0, 0, 0), new Vector3(width, 0, 0));
-        iBounds.Add(left);
-        iBounds.Add(top);
-        iBounds.Add(right);
-        iBounds.Add(bottom);
-
-        for (int i = 0; i < iBounds.Count; i++)
-        {
-           // Debug.DrawLine(iBounds[i].points[0], iBounds[i].points[1], Color.white, 20000, true);
-        }
-
-        return iBounds;
-    }
-
-
-    static List<List<LineSegment>> GenerateInnerBounds(List<LineSegment> microGridLines)
-    {//uses the theory "if you only take right turns you will end up where you began"
+        static List<List<LineSegment>> GenerateInnerBounds(List<LineSegment> microGridLines)
+        {//uses the theory "if you only take right turns you will end up where you began"
         List<List<LineSegment>> allBounds = new List<List<LineSegment>>();
         for (int i = 0; i < microGridLines.Count; i++)
         {
@@ -331,39 +331,39 @@ public class FractBlockGen : MonoBehaviour {
 
 
 
-                    } else if (testCount > 38)
-                    {
-                        Debug.Log("test");
+                        } else if (testCount > 38)
+                        {
+                            Debug.Log("test");
+                        }
                     }
                 }
             }
+            Debug.Log(allBounds.Count);
+            return Milo.RefreshedBounds(allBounds);
         }
-        Debug.Log(allBounds.Count);
-        return Milo.RefreshedBounds(allBounds);
-    }
 
 
-static void DetermineNextLine(List<LineSegment> microGridLines, LineSegment currentLine, int isEnd, ref LineSegment nextLine, ref int nextEnd, ref List<int> useList)
-    {
-        //xyb == 2 == island borderline
-        //xyb == 1 choplines, xyb == 0 are chopline perpendicular to xyb == 1
-        //this works by knowing the type of turns that are possible depending on current location.
-        //One example: If you're on an island border (xyb == 2) you can only go to the next border segment unless you have the option to connect to a non border segment, then you will DEFINITELY take that turn.
-
-        switch (currentLine.connections[isEnd].Count)
+        static void DetermineNextLine(List<LineSegment> microGridLines, LineSegment currentLine, int isEnd, ref LineSegment nextLine, ref int nextEnd, ref List<int> useList)
         {
-            case 0:
+            //xyb == 2 == island borderline
+            //xyb == 1 choplines, xyb == 0 are chopline perpendicular to xyb == 1
+            //this works by knowing the type of turns that are possible depending on current location.
+            //One example: If you're on an island border (xyb == 2) you can only go to the next border segment unless you have the option to connect to a non border segment, then you will DEFINITELY take that turn.
+
+            switch (currentLine.connections[isEnd].Count)
+            {
+                case 0:
                 //error;
                 Debug.Log("test");
                 break;
-            case 1:
+                case 1:
                 //next line equals that connection
                 nextLine = microGridLines[currentLine.connections[isEnd][0].index];
                 nextEnd = Mathf.Abs(currentLine.connections[isEnd][0].isEnd - 1);
                 if (currentLine.xyb != 2f)
-                    useList.Add(currentLine.connections[isEnd][0].index);
+                useList.Add(currentLine.connections[isEnd][0].index);
                 break;
-            case 2:
+                case 2:
                 //if currentLine.xyb == 2, go with the one that is 0 or 1
                 if (currentLine.xyb == 2)
                 {
@@ -372,112 +372,112 @@ static void DetermineNextLine(List<LineSegment> microGridLines, LineSegment curr
                         nextLine = microGridLines[currentLine.connections[isEnd][0].index];
                         nextEnd = Mathf.Abs(currentLine.connections[isEnd][0].isEnd - 1);
                         if (currentLine.xyb != 2f)
-                            useList.Add(currentLine.connections[isEnd][0].index);
-                    } else
-                    {
-                        nextLine = microGridLines[currentLine.connections[isEnd][1].index];
-                        nextEnd = Mathf.Abs(currentLine.connections[isEnd][1].isEnd - 1);
-                        if (currentLine.xyb != 2f)
+                        useList.Add(currentLine.connections[isEnd][0].index);
+                        } else
+                        {
+                            nextLine = microGridLines[currentLine.connections[isEnd][1].index];
+                            nextEnd = Mathf.Abs(currentLine.connections[isEnd][1].isEnd - 1);
+                            if (currentLine.xyb != 2f)
                             useList.Add(currentLine.connections[isEnd][1].index);
 
+                        }
+                        } else
+                        {
+                            IntFloat lineInfo = Milo.DetermineMostLeft(microGridLines, currentLine, isEnd);
+                            nextLine = microGridLines[lineInfo.integer];
+                            nextEnd = Mathf.Abs(lineInfo.isEnd - 1);
+                            if (currentLine.xyb != 2f)
+                            useList.Add(lineInfo.integer);
+
+                        }
+                        break;
+                        case 3:
+                        //all should not be xyb == 2, go with the leftmost one
+                        IntFloat lineI = Milo.DetermineMostLeft(microGridLines, currentLine, isEnd);
+                        if (microGridLines[lineI.integer].xyb == 2)
+                        {
+                            //nextLine = microGridLines[lineI.integer];
+                            //nextEnd = Mathf.Abs(lineI.isEnd - 1);
+                            lineI = Milo.MostLeftCaseThreeBug(microGridLines, currentLine, isEnd);
+                            Debug.DrawLine(microGridLines[lineI.integer].points[0], microGridLines[lineI.integer].points[0] + (Vector3.up * 5), Color.green, 2000, true);
+                        }
+                        nextLine = microGridLines[lineI.integer];
+                        nextEnd = Mathf.Abs(lineI.isEnd - 1);
+                        if (currentLine.xyb != 2f)
+                        useList.Add(lineI.integer);
+                        break;
+                        case 4:
+
+                        Debug.Log("test");
+                        break;
+                        default:
+                        Debug.Log("test");
+                        break;
                     }
-                } else
-                {
-                    IntFloat lineInfo = Milo.DetermineMostLeft(microGridLines, currentLine, isEnd);
-                    nextLine = microGridLines[lineInfo.integer];
-                    nextEnd = Mathf.Abs(lineInfo.isEnd - 1);
-                    if (currentLine.xyb != 2f)
-                        useList.Add(lineInfo.integer);
-
                 }
-                break;
-            case 3:
-                //all should not be xyb == 2, go with the leftmost one
-                IntFloat lineI = Milo.DetermineMostLeft(microGridLines, currentLine, isEnd);
-                if (microGridLines[lineI.integer].xyb == 2)
-                {
-                    //nextLine = microGridLines[lineI.integer];
-                    //nextEnd = Mathf.Abs(lineI.isEnd - 1);
-                    lineI = Milo.MostLeftCaseThreeBug(microGridLines, currentLine, isEnd);
-                    Debug.DrawLine(microGridLines[lineI.integer].points[0], microGridLines[lineI.integer].points[0] + (Vector3.up * 5), Color.green, 2000, true);
+
+                private int index = 0;
+                private int subIndex = 0;
+                private LineSegment currentLine, nextLine;
+                private int isEnd = 1;
+                private int nextEnd;
+                private List<LineSegment> tempBounds = new List<LineSegment>();
+                private List<int> testUseList = new List<int>();
+                private List<float> testAngleList = new List<float>();
+                void Update()
+                {//for testing purposes
+                    if (Input.GetKeyDown("0"))
+                    {
+                        index++;
+                        if (index > macroBounds.Count)
+                        index = 0;
+                        Milo.VisualizeBounds(macroBounds[index], Color.green, Vector3.up, 5);
+                        Milo.DrawNormalDirection(macroBounds[index], 5);
+                        Milo.ShowSmallestMagnitude(macroBounds[index], 5);
+                    }
+
+                    if (Input.GetKeyDown("space"))
+                    {
+                        Milo.VisualizeBounds(macroBounds[index], Color.green, Vector3.up, 5);
+                        Milo.DrawNormalDirection(macroBounds[index], 5);
+                        Milo.ShowSmallestMagnitude(macroBounds[index], 5);
+                    }
                 }
-                nextLine = microGridLines[lineI.integer];
-                nextEnd = Mathf.Abs(lineI.isEnd - 1);
-                if (currentLine.xyb != 2f)
-                    useList.Add(lineI.integer);
-                break;
-            case 4:
 
-                Debug.Log("test");
-                break;
-            default:
-                Debug.Log("test");
-                break;
-        }
-    }
+                void Start()
+                {
+                    Hudson.OffsetPreTest();
+                    islandGenerator = GetComponent<HexGen>();// original plan was to make the island with hex's but decided to go with squares
+                    List<LineSegment> islandBounds = islandGenerator.islandBounds;
+                    List<LineSegment> exBounds = createInitBounds();
+                    macroBounds = GenerateFractalBlocks(islandBounds, exBounds, gridSize, ref testLineBounds);
 
-    private int index = 0;
-    private int subIndex = 0;
-    private LineSegment currentLine, nextLine;
-    private int isEnd = 1;
-    private int nextEnd;
-    private List<LineSegment> tempBounds = new List<LineSegment>();
-    private List<int> testUseList = new List<int>();
-    private List<float> testAngleList = new List<float>();
-    void Update()
-    {//for testing purposes
-        if (Input.GetKeyDown("0"))
-        {
-          index++;
-          if (index > macroBounds.Count)
-          index = 0;
-          Milo.VisualizeBounds(macroBounds[index], Color.green, Vector3.up, 5);
-          Milo.DrawNormalDirection(macroBounds[index], 5);
-          Milo.ShowSmallestMagnitude(macroBounds[index], 5);
-        }
+                    List<List<List<LineSegment>>> microBounds = new List<List<List<LineSegment>>>();
 
-        if (Input.GetKeyDown("space"))
-        {
-          Milo.VisualizeBounds(macroBounds[index], Color.green, Vector3.up, 5);
-          Milo.DrawNormalDirection(macroBounds[index], 5);
-          Milo.ShowSmallestMagnitude(macroBounds[index], 5);
-        }
-    }
+                    for (int i = 0; i < macroBounds.Count; i++)
+                    {
+                        //List<LineSegment> eB = Milo.GenerateExBounds(macroBounds[i]);
+                        //below should updated exBounds objects, just have to fix that function
+                        microBounds.Add(GenerateFractalBlocks(macroBounds[i], exBounds, blockSize, ref testLineBounds));
+                    }
 
-    void Start()
-    {
-        Hudson.OffsetPreTest();
-        islandGenerator = GetComponent<HexGen>();// original plan was to make the island with hex's but decided to go with squares
-        List<LineSegment> islandBounds = islandGenerator.islandBounds;
-        List<LineSegment> exBounds = createInitBounds();
-        macroBounds = GenerateFractalBlocks(islandBounds, exBounds, gridSize, ref testLineBounds);
+                    Debug.Log("test");
+                    currentLine = microLines[0];
+                    macroBounds = Milo.ConcatenateBlocks(microBounds);
+                    for (int i = 0; i < macroBounds.Count; i++)
+                    {
+                        macroBounds[i] = Milo.ReOrderLineList(macroBounds[i], Mathf.Sqrt(blockSize + blockSize));
+                        float p = Milo.GetPerimeter(macroBounds[i]);
+                        if (p < 2f)
+                        {
+                            Milo.VisualizeBounds(macroBounds[i], Color.magenta, Vector3.up);
+                        }
+                        if (p > 2f && p < 5f)
+                        {
+                            Milo.VisualizeBounds(macroBounds[i], Color.green, Vector3.up);
 
-        List<List<List<LineSegment>>> microBounds = new List<List<List<LineSegment>>>();
-
-        for (int i = 0; i < macroBounds.Count; i++)
-        {
-           //List<LineSegment> eB = Milo.GenerateExBounds(macroBounds[i]);
-           //below should updated exBounds objects, just have to fix that function
-           microBounds.Add(GenerateFractalBlocks(macroBounds[i], exBounds, blockSize, ref testLineBounds));
-        }
-
-        Debug.Log("test");
-        currentLine = microLines[0];
-        macroBounds = Milo.ConcatenateBlocks(microBounds);
-        for (int i = 0; i < macroBounds.Count; i++)
-        {
-            macroBounds[i] = Milo.ReOrderLineList(macroBounds[i], Mathf.Sqrt(blockSize + blockSize));
-            float p = Milo.GetPerimeter(macroBounds[i]);
-            if (p < 2f)
-            {
-                Milo.VisualizeBounds(macroBounds[i], Color.magenta, Vector3.up);
+                        }
+                    }
+                    //Milo.VisualizeBlocks(macroBounds);
+                }
             }
-            if (p > 2f && p < 5f)
-            {
-                Milo.VisualizeBounds(macroBounds[i], Color.green, Vector3.up);
-
-            }
-        }
-        //Milo.VisualizeBlocks(macroBounds);
-    }
-}
