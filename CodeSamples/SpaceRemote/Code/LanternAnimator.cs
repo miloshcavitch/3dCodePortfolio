@@ -112,11 +112,14 @@ public class LanternAnimator : MonoBehaviour {
         WobbleLantern();
         FlickerLantern();
         LerpLanternColor();
-        if (Random.Range(0, 1f) >= 0.985)//this should be time based
-           ChangeDirection();
-
-        if (Random.Range(0, 1f) >= 0.997 && (Time.time - lastColorSwitchTime > 1f))
-            SetLanternColors();
+        if (Time.time - randomTimeStamp > 1f / 60f)
+        {
+            randomTimeStamp = Time.time;
+            if (Random.Range(0, 1f) >= 0.965f)
+                ChangeDirection();
+            if (Random.Range(0, 1f) >= 0.98f && (Time.time - lastColorSwitchTime > 1f))
+                SetLanternColors();
+        }
 
             if (Input.GetKeyDown("r"))
               transform.position = zoneSphere.transform.position;
